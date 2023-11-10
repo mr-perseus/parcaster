@@ -1,0 +1,2 @@
+*/10 * * * * sh /root/get-parking-data.sh
+37 02,14 * * * sh /root/push-parking-data.sh
