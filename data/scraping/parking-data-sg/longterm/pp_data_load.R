@@ -17,7 +17,7 @@ library(magrittr)
 library(openxlsx)
 
 # 1d) Directories und Output---------------------------------
-# working_dir <- dirname(getActiveDocumentContext()$path)
+working_dir <- dirname(getActiveDocumentContext()$path)
 git <- "C:/Users/CH00HAG/git/parcaster/data/scraping/parking-data-sg/"
 path <- paste0("O:/Group/TC/Daten_Programme/USERS/HAG/ML4SE/Praxisprojekt/Parkplatzdaten/")
 
@@ -40,6 +40,9 @@ outputpath <- paste0(git, "final/")
 
 # Features
 calendar <- paste0(path, "features/features.xlsx")
+
+# Weather
+hist_weather <- "C:/Users/CH00HAG/git/parcaster/data/scraping/weather/historical_data/historical_weather.csv"
 
 # 2. JSON to Table -----------------------------------------
 # 2.1 Jahr 2022  -----------------------------------------
@@ -140,11 +143,17 @@ pp_00 <- pp[, date := as.Date(datetime)] %>%
   .[calendar.features, `:=` (ferien = i.ferien
                           , feiertag = i.feiertag
                           , covid_19 = i.covid_19
-                          , olma_offa = i.olma_offa), on = .(date = date)] %>% 
-  .[, -c("date")]
+                          , olma_offa = i.olma_offa), on = .(date = date)]
 
 # 8. Weather -----------------------------------------
-pp.final <- pp_00
+historical.weather <- data.table(read.table(hist_weather, sep=",", header = TRUE, encoding="UTF-8")) %>% 
+  .[, new_data := as.Date(date)]
+
+pp.final <- pp_00[historical.weather, `:=` (temperature_2m_max = i.temperature_2m_max
+                                          , temperature_2m_min = i.temperature_2m_min
+                                          , rain_sum = i.rain_sum
+                                          , snowfall_sum = i.snowfall_sum), on = .(date = new_data)] %>% 
+  .[, -c("date")]
 
 # 9. Final Dataset -----------------------------------------
 write.csv(pp.final, file=paste0(outputpath, "pp_sg.csv"), row.names=FALSE, fileEncoding = "UTF-8")
