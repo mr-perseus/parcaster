@@ -9,7 +9,7 @@ import torch.optim as optim
 import torch.utils.data as data
 
 df = pd.read_csv('../data/scraping/parking-data-sg/final/pp_sg.csv', sep=';')
-timeseries = df.head(1000)[["P24"]].values.astype('float32')
+timeseries = df.head(10000)[["P24"]].values.astype('float32')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
@@ -61,7 +61,7 @@ optimizer = optim.Adam(model.parameters())
 loss_fn = nn.MSELoss()
 loader = data.DataLoader(data.TensorDataset(X_train, y_train), shuffle=True, batch_size=8)
 
-n_epochs = 1000
+n_epochs = 200
 for epoch in range(n_epochs):
     model.train()
     for X_batch, y_batch in loader:
@@ -77,7 +77,7 @@ for epoch in range(n_epochs):
         loss.backward()
         optimizer.step()
     # Validation
-    if epoch % 100 != 0:
+    if epoch % 20 != 0:
         continue
     model.eval()
     with torch.no_grad():
