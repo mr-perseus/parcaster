@@ -1,0 +1,106 @@
+{
+    "parking_sg": {
+        "fields": {
+            "P24": {
+                "label": "Bahnhof",
+                "max_cap": 275
+            },
+            "P44": {
+                "label": "Brühltor",
+                "max_cap": 448
+            },
+            "P42": {
+                "label": "Burggraben",
+                "max_cap": 337
+            },
+            "P23": {
+                "label": "Manor",
+                "max_cap": 132
+            },
+            "P33": {
+                "label": "Einstein",
+                "max_cap": 175
+            },
+            "P25": {
+                "label": "Kreuzbleiche",
+                "max_cap": 371
+            },
+            "P21": {
+                "label": "Neumarkt",
+                "max_cap": 274
+            },
+            "P31": {
+                "label": "Oberer Graben",
+                "max_cap": 138
+            },
+            "P54": {
+                "label": "OLMA Messen",
+                "max_cap": null
+            },
+            "P53": {
+                "label": "OLMA Parkplatz",
+                "max_cap": 110
+            },
+            "P32": {
+                "label": "Raiffeisen",
+                "max_cap": 96
+            },
+            "P22": {
+                "label": "Rathaus",
+                "max_cap": 83
+            },
+            "P52": {
+                "label": "Spelterini",
+                "max_cap": 155
+            },
+            "P51": {
+                "label": "Stadtpark AZSG",
+                "max_cap": 88
+            },
+            "P43": {
+                "label": "Spisertor",
+                "max_cap": 32
+            },
+            "P41": {
+                "label": "Unterer Graben",
+                "max_cap": null
+            },
+            "datetime": {
+                "label": "Zeitpunkt",
+                "description": "Beobachtungszeitpunkt"
+            },
+            "ferien": {
+                "label": "Schulferien",
+                "description": "Schulferien im Kanton St. Gallen"
+            },
+            "feiertag": {
+                "label": "Feiertage",
+                "description": "Feiertage in der Stadt St. Gallen"
+            },
+            "covid_19": {
+                "label": "Covid-19",
+                "description": "Covid-19-Massnahmen in Kraft"
+            },
+            "olma_offa": {
+                "label": "OLMA/OFFA",
+                "description": "OLMA oder OFFA findet statt"
+            },
+            "temperature_2m_max": {
+                "label": "Maximaltemperatur",
+                "description": "Maximale Tagestemperatur 2 Meter über Boden gemessen"
+            },
+            "temperature_2m_min": {
+                "label": "Minimaltemperatur",
+                "description": "Minimale Tagestemperatur 2 Meter über Boden gemessen"
+            },
+            "rain_sum": {
+                "label": "Regen",
+                "description": "Tagessumme Regenmenge in mm"
+            },
+            "snowfall_sum": {
+                "label": "Schneefall",
+                "description": "Tagessumme Schneemenge in mm"
+            }
+        }
+    }
+}
