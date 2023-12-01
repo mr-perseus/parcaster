@@ -4,9 +4,11 @@ import pandas as pd
 from torch.utils.data import TensorDataset, DataLoader
 from flask import Flask, jsonify, request
 
+from data.preprocessing.get_features_for_prediction import build_dataframe
+
 app = Flask(__name__)
 
-model_path = "model_scripted.pt"
+model_path = "deploy/model_scripted.pt"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = torch.jit.load(model_path, map_location=device)
 model.eval()
@@ -15,20 +17,6 @@ batch_size = 1  # Required for model input
 parking_data_labels = ["P24", "P44", "P42", "P33", "P23", "P25", "P21", "P31", "P53", "P32", "P22", "P52", "P51",
                        "P43"]  # TODO get these from metadata file
 ignored_columns = ["datetime", "date", "year", "month", "day", "weekdayname", "weekday", "time", "hour", "minute"]
-
-
-def get_features_df(date):
-    # TODO run this method from preprocessing, and remove this mock from here
-    feature_columns = ['ferien', 'feiertag', 'covid_19', 'olma_offa', 'temperature_2m_max',
-                       'temperature_2m_min', 'rain_sum', 'snowfall_sum', 'sin_minute',
-                       'cos_minute', 'sin_hour', 'cos_hour', 'sin_weekday', 'cos_weekday',
-                       'sin_day', 'cos_day', 'sin_month', 'cos_month']
-
-    features_length = len(feature_columns)
-
-    df = pd.DataFrame([0] * len(feature_columns)).T
-    df.columns = feature_columns
-    return df, features_length
 
 
 def build_dataset(df):
@@ -52,7 +40,7 @@ def hello():
 
 @app.route('/metadata')
 def metadata():
-    metadata_json = json.load(open("../data/metadata/metadata.json"))
+    metadata_json = json.load(open("data/metadata/metadata.json"))
     return metadata_json
 
 
@@ -62,7 +50,7 @@ def predict():
         date = request.json['date']
         print(date)
 
-        features_df, features_length = get_features_df(date)
+        features_df, features_length = build_dataframe(date)
         dataloader = build_dataset(features_df)
 
         output = predict_with_model(dataloader, features_length)

@@ -3,10 +3,16 @@ import openmeteo_requests
 import requests_cache
 from datetime import datetime, date, timedelta
 from retry_requests import retry
-from prepare_time_features import prepare_time_features
+
+from .prepare_time_features import prepare_time_features
+
+feature_columns = ['ferien', 'feiertag', 'covid_19', 'olma_offa', 'temperature_2m_max',
+                   'temperature_2m_min', 'rain_sum', 'snowfall_sum', 'sin_minute',
+                   'cos_minute', 'sin_hour', 'cos_hour', 'sin_weekday', 'cos_weekday',
+                   'sin_day', 'cos_day', 'sin_month', 'cos_month']
 
 # Import Features
-calendar_features = pd.read_csv("raw_features_2024.csv", sep=",")
+calendar_features = pd.read_csv("data/preprocessing/raw_features_2024.csv", sep=",")
 calendar_features['date'] = pd.to_datetime(calendar_features['date'], format='%Y-%m-%d')  # Extract Date
 
 # Get Weather-Data
@@ -62,11 +68,15 @@ def build_dataframe(input_date):
     # Add time-features
     df = prepare_time_features(df)
 
-    return df
+    df_filtered = df[feature_columns]
+
+    return df_filtered, len(feature_columns)
 
 
 if __name__ == "__main__":
     date_today = date.today()
     date_tomorrow = date_today + timedelta(days=1)
-    df_demo = build_dataframe(date_tomorrow.strftime("%Y-%m-%d %H:%M"))
+    df_demo, features_length = build_dataframe(date_tomorrow.strftime("%Y-%m-%d %H:%M"))
     print(df_demo.head())
+    print(df_demo.columns)
+    print(features_length)
