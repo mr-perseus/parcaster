@@ -1,0 +1,1 @@
+web: cd deploy && gunicorn app:app
