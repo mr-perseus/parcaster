@@ -1,3 +1,4 @@
+import json
 import torch
 import pandas as pd
 from torch.utils.data import TensorDataset, DataLoader
@@ -47,6 +48,12 @@ def predict_with_model(dataloader, features_length):
 @app.route('/')
 def hello():
     return 'Hello World!'
+
+
+@app.route('/metadata')
+def metadata():
+    metadata_json = json.load(open("../data/metadata/metadata.json"))
+    return metadata_json
 
 
 @app.route('/predict', methods=['POST'])

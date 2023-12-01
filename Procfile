@@ -1,0 +1,1 @@
+web: cd deploy && FLASK_APP=app.py flask run
