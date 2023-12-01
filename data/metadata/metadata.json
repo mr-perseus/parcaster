@@ -3,19 +3,19 @@
         "fields": {
             "P24": {
                 "label": "Bahnhof",
-                "max_cap": 275
+                "max_cap": 310
             },
             "P44": {
                 "label": "Brühltor",
-                "max_cap": 448
+                "max_cap": 637
             },
             "P42": {
                 "label": "Burggraben",
-                "max_cap": 337
+                "max_cap": 363
             },
             "P23": {
                 "label": "Manor",
-                "max_cap": 132
+                "max_cap": 134
             },
             "P33": {
                 "label": "Einstein",
@@ -31,7 +31,7 @@
             },
             "P31": {
                 "label": "Oberer Graben",
-                "max_cap": 138
+                "max_cap": 143
             },
             "P54": {
                 "label": "OLMA Messen",
@@ -39,15 +39,15 @@
             },
             "P53": {
                 "label": "OLMA Parkplatz",
-                "max_cap": 110
+                "max_cap": 112
             },
             "P32": {
                 "label": "Raiffeisen",
-                "max_cap": 96
+                "max_cap": 99
             },
             "P22": {
                 "label": "Rathaus",
-                "max_cap": 83
+                "max_cap": 89
             },
             "P52": {
                 "label": "Spelterini",
@@ -55,11 +55,11 @@
             },
             "P51": {
                 "label": "Stadtpark AZSG",
-                "max_cap": 88
+                "max_cap": 205
             },
             "P43": {
                 "label": "Spisertor",
-                "max_cap": 32
+                "max_cap": 52
             },
             "P41": {
                 "label": "Unterer Graben",
