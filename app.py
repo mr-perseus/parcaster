@@ -1,36 +1,10 @@
 import json
-import torch
-import pandas as pd
-from torch.utils.data import TensorDataset, DataLoader
 from flask import Flask, jsonify, request
+from deploy.predict import Predict
 
-from data.preprocessing.get_features_for_prediction import build_dataframe
 
 app = Flask(__name__)
-
-model_path = "deploy/model_scripted.pt"
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = torch.jit.load(model_path, map_location=device)
-model.eval()
-
-batch_size = 1  # Required for model input
-parking_data_labels = ["P24", "P44", "P42", "P33", "P23", "P25", "P21", "P31", "P53", "P32", "P22", "P52", "P51",
-                       "P43"]  # TODO get these from metadata file
-ignored_columns = ["datetime", "date", "year", "month", "day", "weekdayname", "weekday", "time", "hour", "minute"]
-
-
-def build_dataset(df):
-    features = torch.Tensor(df.values)
-
-    dataset = TensorDataset(features)
-
-    return DataLoader(dataset, batch_size=batch_size, shuffle=False, drop_last=True)
-
-
-def predict_with_model(dataloader, features_length):
-    data = next(iter(dataloader))[0]
-    data = data.view([batch_size, -1, features_length]).to(device)
-    return model(data).cpu()
+predict = Predict("deploy/model_scripted.pt")
 
 
 @app.route('/')
@@ -50,12 +24,7 @@ def predict():
         date = request.json['date']
         print(date)
 
-        features_df, features_length = build_dataframe(date)
-        dataloader = build_dataset(features_df)
-
-        output = predict_with_model(dataloader, features_length)
-
-        output_dicts = [dict(zip(parking_data_labels, row)) for row in output.tolist()]
+        output_dicts = predict.predict_for_date(date)
         return jsonify(output_dicts)
 
 
