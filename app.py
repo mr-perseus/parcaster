@@ -1,10 +1,9 @@
 import json
 from flask import Flask, jsonify, request
-from deploy.predict import Predict
-
+from deploy.single_prediction import SinglePrediction
 
 app = Flask(__name__)
-predict = Predict("deploy/model_scripted.pt")
+single_prediction = SinglePrediction("deploy/model_scripted.pt", "data/preprocessing/raw_features_2024.csv")
 
 
 @app.route('/')
@@ -24,7 +23,7 @@ def predict():
         date = request.json['date']
         print(date)
 
-        output_dicts = predict.predict_for_date(date)
+        output_dicts = single_prediction.predict_for_date(date)
         return jsonify(output_dicts)
 
 

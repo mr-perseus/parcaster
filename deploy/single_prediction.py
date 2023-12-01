@@ -5,11 +5,10 @@ from data.preprocessing.single_prediction_features import SinglePredictionFeatur
 batch_size = 1  # Required for model input
 parking_data_labels = ["P24", "P44", "P42", "P33", "P23", "P25", "P21", "P31", "P53", "P32", "P22", "P52", "P51",
                        "P43"]  # TODO get these from metadata file
-raw_features_path = "data/preprocessing/raw_features_2024.csv"
 
 
-class Predict:
-    def __init__(self, model_path):
+class SinglePrediction:
+    def __init__(self, model_path, raw_features_path):
         self.single_prediction_features = SinglePredictionFeatures(raw_features_path)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = torch.jit.load(model_path, map_location=self.device)
@@ -37,5 +36,5 @@ class Predict:
 
 
 if __name__ == "__main__":
-    predict = Predict("model_scripted.pt")
+    predict = SinglePrediction("model_scripted.pt", "../data/preprocessing/raw_features_2024.csv")
     print(predict.predict_for_date("2023-10-09 00:00"))
