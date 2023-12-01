@@ -10,33 +10,38 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = torch.jit.load(model_path, map_location=device)
 model.eval()
 
+batch_size = 1  # Required for model input
 parking_data_labels = ["P24", "P44", "P42", "P33", "P23", "P25", "P21", "P31", "P53", "P32", "P22", "P52", "P51",
                        "P43"]  # TODO get these from metadata file
 ignored_columns = ["datetime", "date", "year", "month", "day", "weekdayname", "weekday", "time", "hour", "minute"]
 
 
-def load_features_labels():
-    df = pd.read_csv("../data/preprocessing/02_pp_sg_train_features.csv", sep=";")
+def get_features_df(date):
+    # TODO run this method from preprocessing, and remove this mock from here
+    feature_columns = ['ferien', 'feiertag', 'covid_19', 'olma_offa', 'temperature_2m_max',
+                       'temperature_2m_min', 'rain_sum', 'snowfall_sum', 'sin_minute',
+                       'cos_minute', 'sin_hour', 'cos_hour', 'sin_weekday', 'cos_weekday',
+                       'sin_day', 'cos_day', 'sin_month', 'cos_month']
 
-    y = df[parking_data_labels]
-    X = df.drop(columns=parking_data_labels)
-    X = X.drop(columns=ignored_columns)
+    features_length = len(feature_columns)
 
-    input_dim = len(X.columns)
-    output_dim = len(y.columns)
-
-    print(f"Input dimension: {input_dim}, columns: {X.columns}")
-    print(f"Output dimension: {output_dim}, columns: {y.columns}")
-
-    return X, y, input_dim, output_dim
+    df = pd.DataFrame([0] * len(feature_columns)).T
+    df.columns = feature_columns
+    return df, features_length
 
 
-def build_dataset(batch_size, X):
-    features = torch.Tensor(X.values)
+def build_dataset(df):
+    features = torch.Tensor(df.values)
 
     dataset = TensorDataset(features)
 
     return DataLoader(dataset, batch_size=batch_size, shuffle=False, drop_last=True)
+
+
+def predict_with_model(dataloader, features_length):
+    data = next(iter(dataloader))[0]
+    data = data.view([batch_size, -1, features_length]).to(device)
+    return model(data).cpu()
 
 
 @app.route('/')
@@ -50,18 +55,11 @@ def predict():
         date = request.json['date']
         print(date)
 
-        X, y, input_dim, output_dim = load_features_labels()
+        features_df, features_length = get_features_df(date)
+        dataloader = build_dataset(features_df)
 
-        batch_size = 1
-        index_to_predict = 10000
+        output = predict_with_model(dataloader, features_length)
 
-        X_to_predict = X[index_to_predict:index_to_predict + batch_size]
-
-        dataloader = build_dataset(batch_size, X_to_predict)
-
-        data = next(iter(dataloader))[0]
-        data = data.view([batch_size, -1, input_dim]).to(device)
-        output = model(data).cpu()
         output_dicts = [dict(zip(parking_data_labels, row)) for row in output.tolist()]
         return jsonify(output_dicts)
 
