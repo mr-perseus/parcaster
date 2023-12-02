@@ -1,10 +1,9 @@
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 from data.preprocessing.single_prediction_features import SinglePredictionFeatures
+from data.metadata.metadata import parking_data_labels
 
 batch_size = 1  # Required for model input
-parking_data_labels = ["P24", "P44", "P42", "P33", "P23", "P25", "P21", "P31", "P53", "P32", "P22", "P52", "P51",
-                       "P43"]  # TODO get these from metadata file
 
 
 class SinglePrediction:

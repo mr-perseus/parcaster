@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from data.metadata.metadata import feature_columns
 
 
 def prepare_time_features(df):
@@ -37,4 +38,4 @@ def prepare_time_features(df):
     df['sin_month'] = np.sin(2 * np.pi * df['month'] / month_in_year)
     df['cos_month'] = np.cos(2 * np.pi * df['month'] / month_in_year)
 
-    return df
+    return df[feature_columns], len(feature_columns)

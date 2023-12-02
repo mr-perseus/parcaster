@@ -3,14 +3,8 @@ import openmeteo_requests
 import requests_cache
 from datetime import datetime, date, timedelta
 from retry_requests import retry
-
 from data.preprocessing.prepare_time_features import prepare_time_features
 
-# TODO get these from metadata
-feature_columns = ['ferien', 'feiertag', 'covid_19', 'olma_offa', 'temperature_2m_max',
-                   'temperature_2m_min', 'rain_sum', 'snowfall_sum', 'sin_minute',
-                   'cos_minute', 'sin_hour', 'cos_hour', 'sin_weekday', 'cos_weekday',
-                   'sin_day', 'cos_day', 'sin_month', 'cos_month']
 weather_api_url = "https://api.open-meteo.com/v1/forecast"  # URL API
 
 
@@ -66,12 +60,7 @@ class SinglePredictionFeatures:
         df = pd.merge(df_weather, self.calendar_features, on="date", how="left")
         df["datetime"] = timestamp
 
-        # Add time-features
-        df = prepare_time_features(df)
-
-        df_filtered = df[feature_columns]
-
-        return df_filtered, len(feature_columns)
+        return prepare_time_features(df)
 
 
 if __name__ == "__main__":
