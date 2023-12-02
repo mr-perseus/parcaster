@@ -1,8 +1,11 @@
 import json
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from deploy.single_prediction import SinglePrediction
 
 app = Flask(__name__)
+CORS(app)
+
 single_prediction = SinglePrediction("deploy/model_scripted.pt", "data/preprocessing/raw_features_2024.csv")
 
 
