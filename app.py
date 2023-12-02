@@ -6,7 +6,7 @@ from deploy.single_prediction import SinglePrediction
 app = Flask(__name__)
 CORS(app)
 
-single_prediction = SinglePrediction("deploy/model_scripted.pt", "data/preprocessing/raw_features_2024.csv")
+single_prediction = SinglePrediction("deploy/model_scripted.pt", "deploy/scaler.pkl", "data/preprocessing/raw_features_2024.csv")
 
 
 @app.route('/')

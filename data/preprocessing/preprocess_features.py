@@ -13,6 +13,9 @@ class PreprocessFeatures:
         self.append_time_features()
         # self.get_lagged_features()
 
+        pd.set_option('display.max_columns', None)
+        print(self.df.head())
+
         return self.df[feature_columns], len(feature_columns)
 
     def append_time_features(self):

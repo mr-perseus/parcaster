@@ -76,8 +76,6 @@ class SinglePredictionFeatures:
 
         # parking_df = self.get_parking_data_df()
 
-        print(df.head())
-
         return PreprocessFeatures(df).get_features_for_model()
 
 
