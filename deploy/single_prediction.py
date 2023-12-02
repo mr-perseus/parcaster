@@ -1,14 +1,20 @@
 import torch
+import json
+import pandas as pd
 from torch.utils.data import TensorDataset, DataLoader
+from model.scaler import Scaler
 from data.preprocessing.single_prediction_features import SinglePredictionFeatures
+from data.metadata.metadata import parking_data_labels
 
 batch_size = 1  # Required for model input
-parking_data_labels = ["P24", "P44", "P42", "P33", "P23", "P25", "P21", "P31", "P53", "P32", "P22", "P52", "P51",
-                       "P43"]  # TODO get these from metadata file
 
 
 class SinglePrediction:
-    def __init__(self, model_path, raw_features_path):
+    def __init__(self, model_path, scaler_path, raw_features_path, metadata_path):
+        self.metadata = json.load(open(metadata_path))
+        self.labels_readable = [self.metadata["parking_sg"]["fields"][field]["label"] for field in parking_data_labels]
+        self.max_capacity = [self.metadata["parking_sg"]["fields"][field]["max_cap"] for field in parking_data_labels]
+        self.scaler = Scaler.load(scaler_path)
         self.single_prediction_features = SinglePredictionFeatures(raw_features_path)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = torch.jit.load(model_path, map_location=self.device)
@@ -24,7 +30,18 @@ class SinglePrediction:
     def predict_with_model(self, dataloader, features_length):
         data = next(iter(dataloader))[0]
         data = data.view([batch_size, -1, features_length]).to(self.device)
-        return self.model(data).cpu()
+        return self.model(data).detach().cpu().numpy()
+
+    def pretty_prediction(self, output_scaled_back):
+        output_list = output_scaled_back.tolist()[0]
+
+        # TODO find cleaner solution.
+        rounded_list = [round(entry) for entry in output_list]
+        list_capped_min = [0 if entry < 0 else entry for entry in rounded_list]
+        list_capped_max = [self.max_capacity[i] if entry > self.max_capacity[i] else entry for i, entry in
+                           enumerate(list_capped_min)]
+
+        return list_capped_max
 
     def predict_for_date(self, date):
         features_df, features_length = self.single_prediction_features.build_dataframe(date)
@@ -32,9 +49,19 @@ class SinglePrediction:
 
         output = self.predict_with_model(dataloader, features_length)
 
-        return [dict(zip(parking_data_labels, row)) for row in output.tolist()]
+        output_scaled_back = self.scaler.inverse_transform(pd.DataFrame(output, columns=parking_data_labels))
+
+        return {
+            "predictions": self.pretty_prediction(output_scaled_back),
+            "labels": parking_data_labels,
+            "labels_readable": self.labels_readable,
+            "max_capacity": self.max_capacity
+        }
 
 
 if __name__ == "__main__":
-    predict = SinglePrediction("model_scripted.pt", "../data/preprocessing/raw_features_2024.csv")
-    print(predict.predict_for_date("2023-10-09 00:00"))
+    predict = SinglePrediction("../model_scripted.pt", "../scaler.pkl", "../data/preprocessing/raw_features_2024.csv",
+                               "../data/metadata/metadata.json")
+    print(predict.predict_for_date("2023-12-08 08:00"))
+    print(predict.predict_for_date("2023-12-10 18:00"))
+    print(predict.predict_for_date("2023-12-12 12:00"))

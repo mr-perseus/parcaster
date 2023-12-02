@@ -1,5 +1,8 @@
+# Source: https://github.com/SheezaShabbir/Time-series-Analysis-using-LSTM-RNN-and-GRU
+
 import torch
 import torch.nn as nn
+
 
 class RNNModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, layer_dim, output_dim, dropout_prob):
@@ -37,7 +40,7 @@ class RNNModel(nn.Module):
 
         """
         # Initializing hidden state for first input with zeros
-        h0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim,device=x.device).requires_grad_()
+        h0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim, device=x.device).requires_grad_()
 
         # Forward propagation by passing in the input and hidden state into the model
         out, h0 = self.rnn(x, h0.detach())
@@ -69,6 +72,7 @@ class LSTMModel(nn.Module):
                            of LSTMs to our desired output shape.
 
     """
+
     def __init__(self, input_dim, hidden_dim, layer_dim, output_dim, dropout_prob):
         """The __init__ method that initiates a LSTM instance.
 
@@ -105,10 +109,10 @@ class LSTMModel(nn.Module):
 
         """
         # Initializing hidden state for first input with zeros
-        h0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim,device=x.device).requires_grad_()
+        h0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim, device=x.device).requires_grad_()
 
         # Initializing cell state for first input with zeros
-        c0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim,device=x.device).requires_grad_()
+        c0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim, device=x.device).requires_grad_()
 
         # We need to detach as we are doing truncated backpropagation through time (BPTT)
         # If we don't, we'll backprop all the way to the start even after going through another batch
@@ -143,6 +147,7 @@ class GRUModel(nn.Module):
                            of GRUs to our desired output shape.
 
     """
+
     def __init__(self, input_dim, hidden_dim, layer_dim, output_dim, dropout_prob):
         """The __init__ method that initiates a GRU instance.
 
@@ -179,7 +184,7 @@ class GRUModel(nn.Module):
 
         """
         # Initializing hidden state for first input with zeros
-        h0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim,device=x.device).requires_grad_()
+        h0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim, device=x.device).requires_grad_()
 
         # Forward propagation by passing in the input and hidden state into the model
         out, _ = self.gru(x, h0.detach())

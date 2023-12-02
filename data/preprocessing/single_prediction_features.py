@@ -3,14 +3,8 @@ import openmeteo_requests
 import requests_cache
 from datetime import datetime, date, timedelta
 from retry_requests import retry
+from data.preprocessing.preprocess_features import PreprocessFeatures
 
-from data.preprocessing.prepare_time_features import prepare_time_features
-
-# TODO get these from metadata
-feature_columns = ['ferien', 'feiertag', 'covid_19', 'olma_offa', 'temperature_2m_max',
-                   'temperature_2m_min', 'rain_sum', 'snowfall_sum', 'sin_minute',
-                   'cos_minute', 'sin_hour', 'cos_hour', 'sin_weekday', 'cos_weekday',
-                   'sin_day', 'cos_day', 'sin_month', 'cos_month']
 weather_api_url = "https://api.open-meteo.com/v1/forecast"  # URL API
 
 
@@ -27,7 +21,15 @@ class SinglePredictionFeatures:
         retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
         self.openmeteo = openmeteo_requests.Client(session=retry_session)
 
-    def get_weather_forecast(self, params):
+    def get_weather_forecast(self, timestamp):
+        params = {
+            "latitude": 47.4239,
+            "longitude": 9.3748,
+            "daily": ["temperature_2m_max", "temperature_2m_min", "rain_sum", "snowfall_sum"],
+            "start_date": timestamp.strftime("%Y-%m-%d"),
+            "end_date": timestamp.strftime("%Y-%m-%d")
+        }
+
         responses = self.openmeteo.weather_api(weather_api_url, params=params)
         response = responses[0]
 
@@ -48,36 +50,42 @@ class SinglePredictionFeatures:
         daily_dataframe = pd.DataFrame(data=daily_data)
         return daily_dataframe
 
+    # def get_parking_data_df(self):
+    #     df_parking_data = pd.read_csv("temp-for-lagged.csv", sep=";")
+    #     df_parking_data["datetime"] = pd.to_datetime(df_parking_data["datetime"], format='%d.%m.%Y %H:%M')
+    #
+    #     df_parking_data.set_index("datetime", inplace=True)
+    #
+    #     # df = pd.merge(df, df_parking_data, on="datetime", how="outer")
+    #
+    #     print("df_parking_data")
+    #     print(df_parking_data.head())
+    #
+    #     return df_parking_data
+
     def build_dataframe(self, input_date):
         timestamp = datetime.strptime(input_date, '%Y-%m-%d %H:%M')
 
-        params = {
-            "latitude": 47.4239,
-            "longitude": 9.3748,
-            "daily": ["temperature_2m_max", "temperature_2m_min", "rain_sum", "snowfall_sum"],
-            "start_date": timestamp.strftime("%Y-%m-%d"),
-            "end_date": timestamp.strftime("%Y-%m-%d")
-        }
-
         # Get Data
-        df_weather = self.get_weather_forecast(params)
+        df_weather = self.get_weather_forecast(timestamp)
 
         # Merge Weather with other Features
         df = pd.merge(df_weather, self.calendar_features, on="date", how="left")
         df["datetime"] = timestamp
+        # df["datetime"] = pd.to_datetime(timestamp, format='%d.%m.%Y %H:%M')
 
-        # Add time-features
-        df = prepare_time_features(df)
+        # parking_df = self.get_parking_data_df()
 
-        df_filtered = df[feature_columns]
-
-        return df_filtered, len(feature_columns)
+        return PreprocessFeatures(df).get_features_for_model()
 
 
 if __name__ == "__main__":
+    pd.set_option('display.max_columns', None)
     date_today = date.today()
     date_tomorrow = date_today + timedelta(days=1)
     single_prediction_features = SinglePredictionFeatures("raw_features_2024.csv")
+    # print(date_tomorrow.strftime("%Y-%m-%d %H:%M"))
+    # print(date_today.strftime("%Y-%m-%d %H:%M"))
     df_demo, features_length = single_prediction_features.build_dataframe(date_tomorrow.strftime("%Y-%m-%d %H:%M"))
     print(df_demo.head())
     print(df_demo.columns)
