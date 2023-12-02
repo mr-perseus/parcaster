@@ -32,6 +32,17 @@ class SinglePrediction:
         data = data.view([batch_size, -1, features_length]).to(self.device)
         return self.model(data).detach().cpu().numpy()
 
+    def pretty_prediction(self, output_scaled_back):
+        output_list = output_scaled_back.tolist()[0]
+
+        # TODO find cleaner solution.
+        rounded_list = [round(entry) for entry in output_list]
+        list_capped_min = [0 if entry < 0 else entry for entry in rounded_list]
+        list_capped_max = [self.max_capacity[i] if entry > self.max_capacity[i] else entry for i, entry in
+                           enumerate(list_capped_min)]
+
+        return list_capped_max
+
     def predict_for_date(self, date):
         features_df, features_length = self.single_prediction_features.build_dataframe(date)
         dataloader = self.build_dataset(features_df)
@@ -41,7 +52,7 @@ class SinglePrediction:
         output_scaled_back = self.scaler.inverse_transform(pd.DataFrame(output, columns=parking_data_labels))
 
         return {
-            "predictions": output_scaled_back.tolist()[0],
+            "predictions": self.pretty_prediction(output_scaled_back),
             "labels": parking_data_labels,
             "labels_readable": self.labels_readable,
             "max_capacity": self.max_capacity
