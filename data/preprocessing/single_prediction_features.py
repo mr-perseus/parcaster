@@ -4,7 +4,7 @@ import requests_cache
 from datetime import datetime, date, timedelta
 from retry_requests import retry
 
-from .prepare_time_features import prepare_time_features
+from data.preprocessing.prepare_time_features import prepare_time_features
 
 # TODO get these from metadata
 feature_columns = ['ferien', 'feiertag', 'covid_19', 'olma_offa', 'temperature_2m_max',
