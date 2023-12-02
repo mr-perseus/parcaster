@@ -1,4 +1,5 @@
 import torch
+import json
 import pandas as pd
 from torch.utils.data import TensorDataset, DataLoader
 from model.scaler import Scaler
@@ -9,7 +10,10 @@ batch_size = 1  # Required for model input
 
 
 class SinglePrediction:
-    def __init__(self, model_path, scaler_path, raw_features_path):
+    def __init__(self, model_path, scaler_path, raw_features_path, metadata_path):
+        self.metadata = json.load(open(metadata_path))
+        self.labels_readable = [self.metadata["parking_sg"]["fields"][field]["label"] for field in parking_data_labels]
+        self.max_capacity = [self.metadata["parking_sg"]["fields"][field]["max_cap"] for field in parking_data_labels]
         self.scaler = Scaler.load(scaler_path)
         self.single_prediction_features = SinglePredictionFeatures(raw_features_path)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -36,11 +40,17 @@ class SinglePrediction:
 
         output_scaled_back = self.scaler.inverse_transform(pd.DataFrame(output, columns=parking_data_labels))
 
-        return [dict(zip(parking_data_labels, row)) for row in output_scaled_back.tolist()]
+        return {
+            "predictions": output_scaled_back.tolist()[0],
+            "labels": parking_data_labels,
+            "labels_readable": self.labels_readable,
+            "max_capacity": self.max_capacity
+        }
 
 
 if __name__ == "__main__":
-    predict = SinglePrediction("model_scripted.pt", "scaler.pkl", "../data/preprocessing/raw_features_2024.csv")
+    predict = SinglePrediction("../model_scripted.pt", "../scaler.pkl", "../data/preprocessing/raw_features_2024.csv",
+                               "../data/metadata/metadata.json")
     print(predict.predict_for_date("2023-12-08 08:00"))
     print(predict.predict_for_date("2023-12-10 18:00"))
     print(predict.predict_for_date("2023-12-12 12:00"))

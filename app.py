@@ -15,18 +15,13 @@ scaler_path = "scaler.pkl"
 urllib.request.urlretrieve(url_model, model_path)
 urllib.request.urlretrieve(url_scaler, scaler_path)
 
-single_prediction = SinglePrediction(model_path, scaler_path, "data/preprocessing/raw_features_2024.csv")
+single_prediction = SinglePrediction(model_path, scaler_path, "data/preprocessing/raw_features_2024.csv",
+                                     "data/metadata/metadata.json")
 
 
 @app.route('/')
 def hello():
     return 'Hello World!'
-
-
-@app.route('/metadata')
-def metadata():
-    metadata_json = json.load(open("data/metadata/metadata.json"))
-    return metadata_json
 
 
 @app.route('/predict', methods=['POST'])
