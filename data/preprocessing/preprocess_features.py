@@ -13,10 +13,6 @@ class PreprocessFeatures:
         self.append_time_features()
         # self.get_lagged_features()
 
-        print("elf.df.head()")
-        print(self.df.head())
-        print(self.df.columns)
-
         return self.df[feature_columns], len(feature_columns)
 
     def append_time_features(self):
