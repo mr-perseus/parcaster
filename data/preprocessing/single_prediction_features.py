@@ -50,18 +50,18 @@ class SinglePredictionFeatures:
         daily_dataframe = pd.DataFrame(data=daily_data)
         return daily_dataframe
 
-    def get_parking_data_df(self):
-        df_parking_data = pd.read_csv("temp-for-lagged.csv", sep=";")
-        df_parking_data["datetime"] = pd.to_datetime(df_parking_data["datetime"], format='%d.%m.%Y %H:%M')
-
-        df_parking_data.set_index("datetime", inplace=True)
-
-        # df = pd.merge(df, df_parking_data, on="datetime", how="outer")
-
-        print("df_parking_data")
-        print(df_parking_data.head())
-
-        return df_parking_data
+    # def get_parking_data_df(self):
+    #     df_parking_data = pd.read_csv("temp-for-lagged.csv", sep=";")
+    #     df_parking_data["datetime"] = pd.to_datetime(df_parking_data["datetime"], format='%d.%m.%Y %H:%M')
+    #
+    #     df_parking_data.set_index("datetime", inplace=True)
+    #
+    #     # df = pd.merge(df, df_parking_data, on="datetime", how="outer")
+    #
+    #     print("df_parking_data")
+    #     print(df_parking_data.head())
+    #
+    #     return df_parking_data
 
     def build_dataframe(self, input_date):
         timestamp = datetime.strptime(input_date, '%Y-%m-%d %H:%M')
@@ -72,7 +72,7 @@ class SinglePredictionFeatures:
         # Merge Weather with other Features
         df = pd.merge(df_weather, self.calendar_features, on="date", how="left")
         df["datetime"] = timestamp
-        #df["datetime"] = pd.to_datetime(timestamp, format='%d.%m.%Y %H:%M')
+        # df["datetime"] = pd.to_datetime(timestamp, format='%d.%m.%Y %H:%M')
 
         # parking_df = self.get_parking_data_df()
 
@@ -84,8 +84,8 @@ if __name__ == "__main__":
     date_today = date.today()
     date_tomorrow = date_today + timedelta(days=1)
     single_prediction_features = SinglePredictionFeatures("raw_features_2024.csv")
-    print(date_tomorrow.strftime("%Y-%m-%d %H:%M"))
-    print(date_today.strftime("%Y-%m-%d %H:%M"))
+    # print(date_tomorrow.strftime("%Y-%m-%d %H:%M"))
+    # print(date_today.strftime("%Y-%m-%d %H:%M"))
     df_demo, features_length = single_prediction_features.build_dataframe(date_tomorrow.strftime("%Y-%m-%d %H:%M"))
     print(df_demo.head())
     print(df_demo.columns)

@@ -4,17 +4,12 @@ from data.metadata.metadata import feature_columns, parking_data_labels
 
 
 class PreprocessFeatures:
-    # def __init__(self, df, labels_df):
     def __init__(self, df):
         self.df = df
-        # self.labels_df = labels_df
 
     def get_features_for_model(self):
         self.append_time_features()
         # self.get_lagged_features()
-
-        pd.set_option('display.max_columns', None)
-        print(self.df.head())
 
         return self.df[feature_columns], len(feature_columns)
 
@@ -53,7 +48,6 @@ class PreprocessFeatures:
         self.df['sin_month'] = np.sin(2 * np.pi * self.df['month'] / month_in_year)
         self.df['cos_month'] = np.cos(2 * np.pi * self.df['month'] / month_in_year)
 
-    def get_lagged_features(self, period=24):
-        for label in parking_data_labels:
-            pass
-            # self.df[label + '_lagged_' + str(period)] = self.labels_df[label].shift(periods=period)
+    # def get_lagged_features(self, period=24):
+    #     for label in parking_data_labels:
+    #         self.df[label + '_lagged_' + str(period)] = self.labels_df[label].shift(periods=period)

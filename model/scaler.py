@@ -1,10 +1,8 @@
 import joblib
-from sklearn.preprocessing import StandardScaler
 
 
 class Scaler:
     def __init__(self, scaler):
-        # self.scaler = StandardScaler()
         self.scaler = scaler
 
     def scale(self, X_train, X_val, X_test, y_train, y_val, y_test):
