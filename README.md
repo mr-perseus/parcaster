@@ -21,6 +21,8 @@ Bevor die Daten für die Kalibrierung des Modells verwendet werden, werden sie b
 ### Modellentwicklung
 Mit den vorbereiteten Daten wird ein LSTM (https://de.wikipedia.org/wiki/Long_short-term_memory) in Python trainiert. Dabei werden unterschiedliche Werte für diverse Parameter (u.a. Anzahl Layer, Batch-Size, Optimizer) ausprobiert. Als Loss-Function wird der RMSE verwendet. Die Resultate werden mit Weigths & Bias getrackt. Die Ergebnisse können auf der folgenden Homepage eingesehen werden: https://wandb.ai/parcaster/pp-sg-lstm/sweeps/zx34brsw?workspace=user-
 
+Das entsprechende Jupyter Notebook ist unter folgenden Link zu finden: https://github.com/parcaster/parcaster/blob/master/model/W%26B_PPSG_LSTM.ipynb
+
 Die untenstehenden Grafiken zeigen den Vergleich der Vorhersage mit den effektiven Werten nach dem Training:
 
 
