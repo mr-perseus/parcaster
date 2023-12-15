@@ -5,12 +5,12 @@ class Scaler:
     def __init__(self, scaler):
         self.scaler = scaler
 
-    def scale(self, X_train, X_val, X_test):
-        X_train_scaled = self.scaler.fit_transform(X_train)
-        X_val_scaled = self.scaler.transform(X_val)
-        X_test_scaled = self.scaler.transform(X_test)
+    def scale(self, train, val, test):
+        train_scaled = self.scaler.fit_transform(train)
+        val_scaled = self.scaler.transform(val)
+        test_scaled = self.scaler.transform(test)
 
-        return X_train_scaled, X_val_scaled, X_test_scaled
+        return train_scaled, val_scaled, test_scaled
 
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
