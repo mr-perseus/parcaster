@@ -6,15 +6,19 @@ from deploy.single_prediction import SinglePrediction
 app = Flask(__name__)
 CORS(app)
 
-url_model = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/2cg5mebb/model_scripted.pt"
+url_model = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/8q8aq2gu/model_scripted.pt"
 model_path = "model_scripted.pt"
-url_scaler = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/2cg5mebb/scaler.pkl"
-scaler_path = "scaler.pkl"
+X_url_scaler = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/8q8aq2gu/X_scaler.pkl"
+X_scaler_path = "X_scaler.pkl"
+y_url_scaler = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/8q8aq2gu/y_scaler.pkl"
+y_scaler_path = "y_scaler.pkl"
 
 urllib.request.urlretrieve(url_model, model_path)
-urllib.request.urlretrieve(url_scaler, scaler_path)
+urllib.request.urlretrieve(X_url_scaler, X_scaler_path)
+urllib.request.urlretrieve(y_url_scaler, y_scaler_path)
 
-single_prediction = SinglePrediction(model_path, scaler_path, "data/preprocessing/raw_features_2024.csv",
+single_prediction = SinglePrediction(model_path, X_scaler_path, y_scaler_path,
+                                     "data/preprocessing/raw_features_2024.csv",
                                      "data/metadata/metadata.json")
 
 

@@ -12,6 +12,9 @@ class Scaler:
 
         return train_scaled, val_scaled, test_scaled
 
+    def fit_transform(self, data):
+        return self.scaler.fit_transform(data)
+
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
 
