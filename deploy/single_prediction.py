@@ -10,18 +10,19 @@ batch_size = 1  # Required for model input
 
 
 class SinglePrediction:
-    def __init__(self, model_path, scaler_path, raw_features_path, metadata_path):
+    def __init__(self, model_path, X_scaler_path, y_scaler_path, raw_features_path, metadata_path):
         self.metadata = json.load(open(metadata_path))
         self.labels_readable = [self.metadata["parking_sg"]["fields"][field]["label"] for field in parking_data_labels]
         self.max_capacity = [self.metadata["parking_sg"]["fields"][field]["max_cap"] for field in parking_data_labels]
-        self.scaler = Scaler.load(scaler_path)
+        self.X_scaler = Scaler.load(X_scaler_path)
+        self.y_scaler = Scaler.load(y_scaler_path)
         self.single_prediction_features = SinglePredictionFeatures(raw_features_path)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = torch.jit.load(model_path, map_location=self.device)
         self.model.eval()
 
     def build_dataset(self, df):
-        features = torch.Tensor(df.values)
+        features = torch.Tensor(df)
 
         dataset = TensorDataset(features)
 
@@ -45,11 +46,14 @@ class SinglePrediction:
 
     def predict_for_date(self, date):
         features_df, features_length = self.single_prediction_features.build_dataframe(date)
-        dataloader = self.build_dataset(features_df)
+
+        scaled_features = self.X_scaler.fit_transform(features_df)
+
+        dataloader = self.build_dataset(scaled_features)
 
         output = self.predict_with_model(dataloader, features_length)
 
-        output_scaled_back = self.scaler.inverse_transform(pd.DataFrame(output, columns=parking_data_labels))
+        output_scaled_back = self.y_scaler.inverse_transform(pd.DataFrame(output, columns=parking_data_labels))
 
         return {
             "predictions": self.pretty_prediction(output_scaled_back),
@@ -60,7 +64,8 @@ class SinglePrediction:
 
 
 if __name__ == "__main__":
-    predict = SinglePrediction("../model_scripted.pt", "../scaler.pkl", "../data/preprocessing/raw_features_2024.csv",
+    predict = SinglePrediction("../model_scripted.pt", "../X_scaler.pkl", "../y_scaler",
+                               "../data/preprocessing/raw_features_2024.csv",
                                "../data/metadata/metadata.json")
     print(predict.predict_for_date("2023-12-08 08:00"))
     print(predict.predict_for_date("2023-12-10 18:00"))
