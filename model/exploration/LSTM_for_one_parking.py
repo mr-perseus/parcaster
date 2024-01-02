@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
 
-df = pd.read_csv('../data/preprocessing/02_pp_sg_train_features.csv', sep=';')
+df = pd.read_csv('../../data/preprocessing/01_pp_sg_train_cleaned.csv', sep=';')
 timeseries = df.head(10000)[["P24"]].values.astype('float32')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
