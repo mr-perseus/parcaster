@@ -3,6 +3,8 @@ model_scripted.pt
 X_scaler.pkl
 y_scaler.pkl
 
+test_predictions
+
 # Swiss meteo request
 .cache.sqlite
 
