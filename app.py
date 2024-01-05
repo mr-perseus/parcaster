@@ -6,11 +6,11 @@ from deploy.single_prediction import SinglePrediction
 app = Flask(__name__)
 CORS(app)
 
-url_model = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/8q8aq2gu/model_scripted.pt"
+url_model = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/f8x6m452/model_scripted.pt"
 model_path = "model_scripted.pt"
-X_url_scaler = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/8q8aq2gu/X_scaler.pkl"
+X_url_scaler = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/f8x6m452/X_scaler.pkl"
 X_scaler_path = "X_scaler.pkl"
-y_url_scaler = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/8q8aq2gu/y_scaler.pkl"
+y_url_scaler = "https://api.wandb.ai/files/parcaster/pp-sg-lstm/f8x6m452/y_scaler.pkl"
 y_scaler_path = "y_scaler.pkl"
 
 urllib.request.urlretrieve(url_model, model_path)
