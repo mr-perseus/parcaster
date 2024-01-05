@@ -47,7 +47,7 @@ class SinglePrediction:
     def predict_for_date(self, date):
         features_df, features_length = self.single_prediction_features.build_dataframe(date)
 
-        scaled_features = self.X_scaler.fit_transform(features_df)
+        scaled_features = self.X_scaler.transform(features_df)
 
         dataloader = self.build_dataset(scaled_features)
 
