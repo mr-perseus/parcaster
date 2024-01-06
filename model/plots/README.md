@@ -1,0 +1,1 @@
+This directory contains the first 100 predictions (and targets on the test data) based on the W&B run `f8x6m452`. (See https://wandb.ai/parcaster/pp-sg-lstm/runs/f8x6m452)
