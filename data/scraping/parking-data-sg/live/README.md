@@ -1,5 +1,3 @@
-# Parking Data of St. Gallen
-
 The scraping parking data of St. Gallen.
 
 - `./cron` contains the cron tasks which run automatically on a Linux server
